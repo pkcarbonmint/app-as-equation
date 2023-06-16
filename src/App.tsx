@@ -1,24 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer, useState } from "react";
+import "./App.css";
+import GreetingWidget from "./components/GreetingWidget";
+
+export interface AppState {
+  name: string | null;
+}
+
+export enum AppActionEnum {
+  INIT,
+  SET_NAME,
+  CLEAR_NAME,
+}
+
+export type AppAction = {
+  type: AppActionEnum;
+  name: string | null;
+};
+
+function reducer(state: AppState, action: AppAction): AppState {
+  switch (action.type) {
+    case AppActionEnum.SET_NAME:
+      console.log("Setting name", action.name);
+      return { ...state, name: action.name };
+    case AppActionEnum.CLEAR_NAME:
+      console.log("Clearing name");
+      return { ...state, name: null };
+  }
+  return state;
+}
 
 function App() {
+
+  const [state, dispatch]: [AppState, React.Dispatch<AppAction>] = useReducer(
+    reducer,
+    { name: null }
+  );
+
+  const Widget = GreetingWidget(dispatch);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Widget {...state} />
     </div>
   );
 }
